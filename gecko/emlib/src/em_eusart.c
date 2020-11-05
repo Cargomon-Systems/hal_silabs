@@ -231,21 +231,18 @@ void EUSART_Enable(EUSART_TypeDef *eusart, EUSART_Enable_TypeDef enable)
   if (enable == eusartDisable) {
     eusart->EN_CLR = EUSART_EN_EN;
   } else {
-    // Enable peripheral to configure Rx and Tx.
     eusart->EN_SET = EUSART_EN_EN;
 
-    // Enable or disable Rx and/or Tx
     tmp = (enable)
           & (_EUSART_CMD_RXEN_MASK | _EUSART_CMD_TXEN_MASK
              | _EUSART_CMD_RXDIS_MASK | _EUSART_CMD_TXDIS_MASK);
 
-    eusart_sync(eusart, _EUSART_SYNCBUSY_MASK);
+    eusart_sync(eusart, _EUSART_SYNCBUSY_MASK); // Wait for low frequency register synchronization.
     eusart->CMD = tmp;
     eusart_sync(eusart,
                 EUSART_SYNCBUSY_RXEN | EUSART_SYNCBUSY_TXEN
-                | EUSART_SYNCBUSY_RXDIS | EUSART_SYNCBUSY_TXDIS);
+                | EUSART_SYNCBUSY_RXDIS | EUSART_SYNCBUSY_TXDIS); // Wait for low frequency register synchronization.
 
-    // Wait for the status register to be updated.
     tmp = 0;
     if (_EUSART_CMD_RXEN_MASK & enable) {
       tmp |= EUSART_STATUS_RXENS;
@@ -254,7 +251,7 @@ void EUSART_Enable(EUSART_TypeDef *eusart, EUSART_Enable_TypeDef enable)
       tmp |= EUSART_STATUS_TXENS;
     }
     while ((eusart->STATUS & (_EUSART_STATUS_TXENS_MASK | _EUSART_STATUS_RXENS_MASK)) != tmp) {
-    }
+    } // Wait for the status register to be updated.
   }
 }
 
@@ -410,9 +407,9 @@ void EUSART_BaudrateSet(EUSART_TypeDef *eusart,
   // If the EFM_ASSERT is not enabled, make sure not to write to reserved bits.
   clkdiv &= _EUSART_CLKDIV_MASK;
 
-  eusart_sync(eusart, _EUSART_SYNCBUSY_DIV_MASK);
+  eusart_sync(eusart, _EUSART_SYNCBUSY_DIV_MASK); // Wait for low frequency register synchronization.
   eusart->CLKDIV = clkdiv;
-  eusart_sync(eusart, _EUSART_SYNCBUSY_DIV_MASK);
+  eusart_sync(eusart, _EUSART_SYNCBUSY_DIV_MASK); // Wait for low frequency register synchronization.
 }
 
 /***************************************************************************//**
@@ -453,9 +450,9 @@ void  EUSART_RxBlock(EUSART_TypeDef *eusart, EUSART_BlockRx_TypeDef enable)
   tmp   = ((uint32_t)(enable));
   tmp  &= (_EUSART_CMD_RXBLOCKEN_MASK | _EUSART_CMD_RXBLOCKDIS_MASK);
 
-  eusart_sync(eusart, EUSART_SYNCBUSY_RXBLOCKEN | EUSART_SYNCBUSY_RXBLOCKDIS);
+  eusart_sync(eusart, EUSART_SYNCBUSY_RXBLOCKEN | EUSART_SYNCBUSY_RXBLOCKDIS); // Wait for low frequency register synchronization.
   eusart->CMD = tmp;
-  eusart_sync(eusart, EUSART_SYNCBUSY_RXBLOCKEN | EUSART_SYNCBUSY_RXBLOCKDIS);
+  eusart_sync(eusart, EUSART_SYNCBUSY_RXBLOCKEN | EUSART_SYNCBUSY_RXBLOCKDIS); // Wait for low frequency register synchronization.
 
   tmp = 0u;
   if ((_EUSART_CMD_RXBLOCKEN_MASK & enable) != 0u) {
@@ -479,9 +476,9 @@ void  EUSART_TxTristateSet(EUSART_TypeDef *eusart,
   tmp   = ((uint32_t)(enable));
   tmp  &= (_EUSART_CMD_TXTRIEN_MASK | _EUSART_CMD_TXTRIDIS_MASK);
 
-  eusart_sync(eusart, EUSART_SYNCBUSY_TXTRIEN | EUSART_SYNCBUSY_TXTRIDIS);
+  eusart_sync(eusart, EUSART_SYNCBUSY_TXTRIEN | EUSART_SYNCBUSY_TXTRIDIS); // Wait for low frequency register synchronization.
   eusart->CMD = tmp;
-  eusart_sync(eusart, EUSART_SYNCBUSY_TXTRIEN | EUSART_SYNCBUSY_TXTRIDIS);
+  eusart_sync(eusart, EUSART_SYNCBUSY_TXTRIEN | EUSART_SYNCBUSY_TXTRIDIS); // Wait for low frequency register synchronization.
 
   tmp = 0u;
   if ((_EUSART_CMD_TXTRIEN_MASK & enable) != 0u) {
@@ -512,12 +509,12 @@ void EUSART_PrsTriggerEnable(EUSART_TypeDef *eusart,
   tmp  &= (_EUSART_TRIGCTRL_RXTEN_MASK | _EUSART_TRIGCTRL_TXTEN_MASK);
 
   eusart->TRIGCTRL_SET = tmp;
-  eusart_sync(eusart, EUSART_SYNCBUSY_RXTEN | EUSART_SYNCBUSY_TXTEN);
+  eusart_sync(eusart, EUSART_SYNCBUSY_RXTEN | EUSART_SYNCBUSY_TXTEN); // Wait for low frequency register synchronization.
 
   tmp   = ~((uint32_t)(init->prs_trigger_enable));
   tmp  &= (_EUSART_TRIGCTRL_RXTEN_MASK | _EUSART_TRIGCTRL_TXTEN_MASK);
   eusart->TRIGCTRL_CLR = tmp;
-  eusart_sync(eusart, EUSART_SYNCBUSY_RXTEN | EUSART_SYNCBUSY_TXTEN);
+  eusart_sync(eusart, EUSART_SYNCBUSY_RXTEN | EUSART_SYNCBUSY_TXTEN); // Wait for low frequency register synchronization.
 }
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */

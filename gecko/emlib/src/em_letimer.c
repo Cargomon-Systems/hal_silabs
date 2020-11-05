@@ -556,9 +556,6 @@ void LETIMER_RepeatSet(LETIMER_TypeDef *letimer,
  ******************************************************************************/
 void LETIMER_Reset(LETIMER_TypeDef *letimer)
 {
-#if defined (LETIMER_EN_EN)
-  letimer->EN_SET = LETIMER_EN_EN;
-#endif
   LETIMER_SyncWait(letimer);
 #if defined(_LETIMER_FREEZE_MASK)
   /* Freeze registers to avoid stalling for LF synchronization. */

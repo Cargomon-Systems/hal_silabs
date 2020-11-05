@@ -36,6 +36,10 @@
 #include "em_gpio.h"
 #include "em_bus.h"
 
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_220)
+#include "em_cmu.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -325,6 +329,10 @@ __STATIC_INLINE void CHIP_Init(void)
   /* Set TRACE clock to intended reset value. */
   CMU->TRACECLKCTRL = (CMU->TRACECLKCTRL & ~_CMU_TRACECLKCTRL_CLKSEL_MASK)
                       | CMU_TRACECLKCTRL_CLKSEL_HFRCOEM23;
+#endif
+
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_220)
+  CMU_HFRCODPLLBandSet(cmuHFRCODPLLFreq_19M0Hz);
 #endif
 
 #if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_205)
